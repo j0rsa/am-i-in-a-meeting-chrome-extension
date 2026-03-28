@@ -1,0 +1,28 @@
+{
+  "manifest_version": 3,
+  "name": "Am I In a Meeting?",
+  "version": "0.1.0",
+  "description": "Detects meeting tabs and reports state to a localhost app.",
+  "permissions": [
+    "tabs",
+    "storage"
+  ],
+  "host_permissions": [
+    "http://127.0.0.1/*",
+    "http://localhost/*",
+    "http://10.*/*",
+    "http://192.168.*/*",
+    "https://meet.google.com/*",
+    "https://*.zoom.us/*",
+    "https://teams.microsoft.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "options_page": "options.html",
+  "action": {
+    "default_title": "Am I In a Meeting?",
+    "default_popup": "popup.html"
+  }
+}

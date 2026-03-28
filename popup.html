@@ -1,0 +1,57 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Am I In a Meeting?</title>
+    <style>
+      body { font-family: system-ui, sans-serif; margin: 14px; width: 320px; }
+      .row { margin-bottom: 12px; }
+      .label { font-size: 12px; color: #666; margin-bottom: 4px; }
+      .value { font-size: 14px; word-break: break-word; }
+      .state { font-weight: 700; }
+      .on { color: #c62828; }
+      .off { color: #666; }
+      a, button { font-size: 13px; }
+      .actions { display: flex; justify-content: space-between; align-items: center; margin-top: 14px; }
+      .toggle-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+      .switch { position: relative; display: inline-block; width: 46px; height: 28px; }
+      .switch input { opacity: 0; width: 0; height: 0; }
+      .slider { position: absolute; inset: 0; cursor: pointer; background: #c7c9cc; transition: .2s; border-radius: 999px; }
+      .slider:before { position: absolute; content: ""; height: 22px; width: 22px; left: 3px; top: 3px; background: white; transition: .2s; border-radius: 50%; box-shadow: 0 1px 3px rgba(0,0,0,.2); }
+      input:checked + .slider { background: #c62828; }
+      input:checked + .slider:before { transform: translateX(18px); }
+      .toggle-label { font-size: 14px; font-weight: 500; }
+    </style>
+  </head>
+  <body>
+    <div class="row">
+      <div class="label">State</div>
+      <div id="state" class="value state off">Not in meeting</div>
+    </div>
+
+    <div class="row">
+      <div class="label">Matched URL</div>
+      <div id="matchedUrl" class="value">—</div>
+    </div>
+
+    <div class="row">
+      <div class="label">Webhook URL</div>
+      <div id="webhookUrl" class="value">—</div>
+    </div>
+
+    <div class="row toggle-row">
+      <div class="toggle-label">Webhook enabled</div>
+      <label class="switch" aria-label="Webhook enabled">
+        <input id="webhookEnabled" type="checkbox" />
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <div class="actions">
+      <button id="refresh">Refresh</button>
+      <a href="#" id="openSettings">Settings</a>
+    </div>
+
+    <script src="popup.js"></script>
+  </body>
+</html>

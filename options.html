@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Am I In a Meeting? Options</title>
+    <style>
+      body { font-family: system-ui, sans-serif; margin: 24px; max-width: 560px; }
+      label { display: block; margin-top: 16px; font-weight: 600; }
+      input[type="text"] { width: 100%; padding: 8px; margin-top: 6px; box-sizing: border-box; }
+      button { margin-top: 20px; padding: 10px 14px; }
+      #status { margin-top: 14px; color: #0a7a2f; }
+      code { background: #f3f3f3; padding: 2px 4px; }
+      .toggle { display:flex; align-items:center; gap:8px; font-weight:400; }
+      .toggle input { margin: 0; }
+    </style>
+  </head>
+  <body>
+    <h1>Am I In a Meeting?</h1>
+    <p>Configure where the extension posts meeting-state callbacks.</p>
+
+    <label for="webhookUrl">Webhook URL</label>
+    <input id="webhookUrl" type="text" placeholder="http://127.0.0.1:3847/meeting-state" />
+
+    <label class="toggle" for="webhookEnabled">
+      <input id="webhookEnabled" type="checkbox" />
+      Webhook enabled
+    </label>
+
+    <button id="save">Save</button>
+    <div id="status"></div>
+
+    <p>Allowed webhook targets in v1: <code>127.0.0.1</code>, <code>localhost</code>, <code>10.*</code>, <code>192.168.*</code></p>
+
+    <script src="options.js"></script>
+  </body>
+</html>
