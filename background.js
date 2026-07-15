@@ -91,23 +91,7 @@ async function renderIcon() {
   await applyMeetingIcon(state.atMeeting, state.webhookEnabled);
 }
 
-async function postState(reason) {
-  const settings = await ensureSettingsReady();
-  state.webhookEnabled = settings.webhookEnabled !== false;
-  if (!state.webhookEnabled || !settings.webhookUrl) return;
-
-  const browserInstanceId = await ensureBrowserInstanceId();
-  const browserName = chrome.runtime.getManifest().name;
-
-  const payload = {
-    browserInstanceId,
-    browserName,
-    atMeeting: state.atMeeting,
-    url: state.lastUrl,
-    reason,
-    timestamp: new Date().toISOString(),
-  };
-
+async function postPayload(settings, payload) {
   try {
     await fetch(settings.webhookUrl, {
       method: 'POST',
@@ -117,6 +101,42 @@ async function postState(reason) {
   } catch (error) {
     console.warn('Failed to post meeting state', error);
   }
+}
+
+async function postState(reason) {
+  const settings = await ensureSettingsReady();
+  state.webhookEnabled = settings.webhookEnabled !== false;
+  if (!state.webhookEnabled || !settings.webhookUrl) return;
+
+  const browserInstanceId = await ensureBrowserInstanceId();
+  const browserName = chrome.runtime.getManifest().name;
+
+  await postPayload(settings, {
+    browserInstanceId,
+    browserName,
+    atMeeting: state.atMeeting,
+    url: state.lastUrl,
+    reason,
+    timestamp: new Date().toISOString(),
+  });
+}
+
+async function postWebhookDisabledSignal() {
+  const settings = await ensureSettingsReady();
+  if (!settings.webhookUrl) return;
+
+  const browserInstanceId = await ensureBrowserInstanceId();
+  const browserName = chrome.runtime.getManifest().name;
+
+  await postPayload(settings, {
+    browserInstanceId,
+    browserName,
+    atMeeting: state.atMeeting,
+    url: state.lastUrl,
+    reason: 'webhook-disabled',
+    downstreamAutomation: false,
+    timestamp: new Date().toISOString(),
+  });
 }
 
 async function refreshState(reason = 'refresh') {
@@ -194,8 +214,13 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
 
 chrome.storage.onChanged.addListener(async (changes, area) => {
   if (area === 'local' && 'webhookEnabled' in changes) {
-    state.webhookEnabled = changes.webhookEnabled.newValue !== false;
+    const wasEnabled = changes.webhookEnabled.oldValue !== false;
+    const isEnabled = changes.webhookEnabled.newValue !== false;
+    state.webhookEnabled = isEnabled;
     await refreshSettingsCache();
     await renderIcon();
+    if (wasEnabled && !isEnabled) {
+      await postWebhookDisabledSignal();
+    }
   }
 });

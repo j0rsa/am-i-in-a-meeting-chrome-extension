@@ -34,6 +34,8 @@ Minimal MV3 extension that detects well-known meeting URLs and POSTs state chang
 }
 ```
 
+When webhook sending is turned off, one final POST is sent with `"reason": "webhook-disabled"` and `"downstreamAutomation": false` so downstream automations (e.g. status bulbs) do not act on this browser until webhooks are re-enabled.
+
 ## Load locally
 
 1. Open `chrome://extensions`
