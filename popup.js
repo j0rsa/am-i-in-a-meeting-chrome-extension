@@ -6,6 +6,24 @@ const LOCAL_DEFAULTS = {
   webhookEnabled: true,
 };
 
+function maskWebhookUrl(url) {
+  if (!url) return '—';
+  try {
+    const parsed = new URL(url);
+    const segments = parsed.pathname.split('/').filter(Boolean);
+    let path = parsed.pathname || '/';
+    if (segments.length > 1) {
+      path = `/${segments.slice(0, -1).join('/')}/...`;
+    } else if (parsed.search || parsed.hash) {
+      path = `${path}...`;
+    }
+    return `${parsed.origin}${path}`;
+  } catch (_error) {
+    const lastSlash = url.lastIndexOf('/');
+    return lastSlash > 0 ? `${url.slice(0, lastSlash + 1)}...` : url;
+  }
+}
+
 async function getExtensionState() {
   try {
     const state = await chrome.runtime.sendMessage({ type: 'get-state' });
@@ -25,7 +43,9 @@ async function loadPopup() {
   stateEl.className = `value state ${state.atMeeting ? 'on' : 'off'}`;
 
   document.getElementById('matchedUrl').textContent = state.lastUrl || '—';
-  document.getElementById('webhookUrl').textContent = syncSettings.webhookUrl || SYNC_DEFAULTS.webhookUrl;
+  document.getElementById('webhookUrl').textContent = maskWebhookUrl(
+    syncSettings.webhookUrl || SYNC_DEFAULTS.webhookUrl,
+  );
   document.getElementById('webhookEnabled').checked = (localSettings.webhookEnabled ?? state.webhookEnabled) !== false;
 }
 
